@@ -1,0 +1,27 @@
+{
+  "name": "nguoi-rung",
+  "version": "0.0.1",
+  "description": "",
+  "main": "app.ts",
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack-dev-server --port 8842"
+  },
+  "author": "Jacob A. Ferrero",
+  "license": "GPL",
+  "dependencies": {
+    "@babylonjs/core": "6.16.0",
+    "@stdlib/random-base-uniform": "0.0.6"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "11.0.0",
+    "html-webpack-plugin": "5.5.3",
+    "raw-loader": "4.0.2",
+    "ts-loader": "9.4.4",
+    "typescript": "5.1.6",
+    "url-loader": "4.1.1",
+    "webpack": "5.88.2",
+    "webpack-cli": "5.1.4",
+    "webpack-dev-server": "4.15.1"
+  }
+}
