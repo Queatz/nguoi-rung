@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+
+html, body {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans', sans, monospace;
+}
+#canvas {
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    image-rendering: pixelated;
+}
+
+.ui {
+    z-index: 1;
+    position: absolute;
+    inset: 0;
+    padding: 1rem;
+    pointer-events: none;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.ui .panel {
+    border-radius: 1rem;
+    background: #f2f2f2f2;
+    box-shadow: 0 2px 4px rgba(0 0 0 / 10%);
+    padding: 1rem;
+    max-width: 33vw;
+    width: 18rem;
+    overflow: hidden auto;
+    pointer-events: all;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: none;
+}
+
+.ui .panel-section {
+    font-weight: bold;
+}
+
+.ui .panel-section:not(:last-child) {
+    margin-bottom: 1rem;
+}
+
+.ui .panel-box {
+    border-radius: .5rem;
+    border: 1px solid rgba(0 0 0 / 10%);
+    height: 12rem;
+    margin-top: 1rem;
+    background-color: rgba(0 0 0 / 2.5%);
+}
