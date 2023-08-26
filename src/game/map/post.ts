@@ -1,4 +1,4 @@
-import {Scene} from '@babylonjs/core'
+import {ColorCorrectionPostProcess, Scene} from '@babylonjs/core'
 
 export class Post {
     constructor(private scene: Scene) {
@@ -30,6 +30,6 @@ export class Post {
         // pipeline.bloomKernel = 64
         // pipeline.bloomScale = .5
 
-        // new ColorCorrectionPostProcess('Color Correction', '/assets/lut.png', 1, camera)
+        // new ColorCorrectionPostProcess('Color Correction', '/assets/lut.png', 1, this.scene.activeCamera)
     }
 }

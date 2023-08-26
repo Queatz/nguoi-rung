@@ -21,6 +21,7 @@ export class Map {
         })
         const tilemapEditor = new TilemapEditor(scene, tilemap)
         const player = new Player(scene)
+        world.addShadowCaster(player.mesh) // todo move into Player class
 
         this.tilemapEditor = tilemapEditor
 
@@ -135,7 +136,7 @@ export class Map {
                         camera.walk(walk)
                         player.walk(walk)
                         player.mesh.isVisible = true
-                        camera.camera.setTarget(player.mesh.position.add(new Vector3(0, .5, 0)))
+                        camera.camera.setTarget(player.mesh.position.add(new Vector3(0, .25, 0)))
                         break
                     case CameraView.Eye:
                         player.mesh.isVisible = false

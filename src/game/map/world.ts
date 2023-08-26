@@ -34,8 +34,8 @@ export class World {
         this.ambience = ambience
 
         const shadowGenerator = new CascadedShadowGenerator(256, sun)
-        shadowGenerator.lambda = .8
-        shadowGenerator.bias = .02
+        shadowGenerator.lambda = .75
+        shadowGenerator.bias = .025
         shadowGenerator.transparencyShadow = true
         shadowGenerator.stabilizeCascades = true
         shadowGenerator.shadowMaxZ = sun.shadowMaxZ

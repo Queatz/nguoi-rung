@@ -1,4 +1,4 @@
-import {Color3, Mesh, MeshBuilder, Scene, StandardMaterial, Vector3} from '@babylonjs/core'
+import {Color3, Mesh, MeshBuilder, Scene, StandardMaterial, Texture, Vector3} from '@babylonjs/core'
 
 export class Player {
 
@@ -6,9 +6,14 @@ export class Player {
 
     constructor(private scene: Scene) {
         const mesh = MeshBuilder.CreatePlane('Player', {size: .5, updatable: true}, scene)
-        mesh.material = new StandardMaterial('Player', scene)
-
-        ;(mesh.material as StandardMaterial).diffuseColor = Color3.Purple()
+        const mat = new StandardMaterial('Player', scene)
+        mat.diffuseTexture = new Texture('assets/player.png', this.scene, {
+            samplingMode: Texture.NEAREST_SAMPLINGMODE,
+        })
+        mat.diffuseTexture.hasAlpha = true
+        mat.diffuseTexture.wrapU = Texture.CLAMP_ADDRESSMODE
+        mat.diffuseTexture.wrapV = Texture.CLAMP_ADDRESSMODE
+        mesh.material = mat
         mesh.material.backFaceCulling = false
         mesh.billboardMode = Mesh.BILLBOARDMODE_Y
         mesh.position.y += .25

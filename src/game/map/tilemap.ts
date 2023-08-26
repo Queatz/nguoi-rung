@@ -41,7 +41,7 @@ export class Tilemap {
         box.isVisible = false
 
         const m = new StandardMaterial('Pine Tree')
-        m.diffuseTexture = new Texture('/assets/pine.png', scene, {
+        m.diffuseTexture = new Texture('assets/pine.png', scene, {
             samplingMode: Texture.NEAREST_SAMPLINGMODE
         })
         m.diffuseTexture.wrapU = Texture.CLAMP_ADDRESSMODE
