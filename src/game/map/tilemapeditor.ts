@@ -23,6 +23,9 @@ export class TilemapEditor {
     drawPlaneOffset = 0
     drawMode: 'tile' | 'object' = 'tile'
     autoRotate = true
+    brushShape: 'circle' | 'square' = 'square'
+    brushSize = 1
+    brushDensity = 100
 
     constructor(private scene: Scene, private tilemap: Tilemap) {
         const cursor = MeshBuilder.CreatePlane('tile', {size: 1, updatable: true}, scene)
@@ -121,18 +124,43 @@ export class TilemapEditor {
     }
 
     draw = (eraser: boolean) => {
-        if (this.drawMode === 'object') {
-            if (eraser) {
-                this.tilemap.removeObject(this.cursor.position, this.side)
-            } else {
-                this.tilemap.addObject(this.cursor.position, this.side)
-            }
-            return
-        } else if (this.drawMode === 'tile') {
-            if (eraser) {
-                this.tilemap.removeTile(this.cursor.position, this.side)
-            } else {
-                this.tilemap.setTile(this.cursor.position, this.side)
+        this.drawBrush(this.cursor.position, this.side, eraser)
+    }
+
+    private drawBrush = (position: Vector3, side: Side, eraser = false) => {
+        const o = Vector3.Zero()
+        const r = Math.floor(this.brushSize / 2)
+        for (let x = -r; x < this.brushSize - r; x++) {
+            for (let y = -r; y < this.brushSize - r; y++) {
+                switch (this.drawPlane) {
+                    case 'x':
+                        o.z = x
+                        o.y = y
+                        break
+                    case 'y':
+                        o.x = x
+                        o.z = y
+                        break
+                    case 'z':
+                        o.x = x
+                        o.y = y
+                        break
+                }
+                if (this.brushDensity === 100 || Math.random() < this.brushDensity / 100) {
+                    if (this.drawMode === 'object') {
+                        if (eraser) {
+                            this.tilemap.removeObject(position.add(o), side)
+                        } else {
+                            this.tilemap.addObject(position.add(o), side)
+                        }
+                    } else if (this.drawMode === 'tile') {
+                        if (eraser) {
+                            this.tilemap.removeTile(position.add(o), side)
+                        } else {
+                            this.tilemap.setTile(position.add(o), side)
+                        }
+                    }
+                }
             }
         }
     }
@@ -196,6 +224,7 @@ export class TilemapEditor {
         } else {
             this.grid.rotation = new Vector3(Math.PI / 2, 0, 0)
         }
+        this.refreshBrush()
     }
 
     pickAdjust = () => {
@@ -232,13 +261,17 @@ export class TilemapEditor {
     }
 
     toggleSide = () => {
+        // todo if auto rotate toggle between plane and wall
         this.side = this.side === 'y' ? 'z' : this.side === 'z' ? 'x' : 'y'
+        this.refreshBrush()
+    }
 
+    private refreshBrush = () => {
         if (this.side === 'z') {
             this.cursor.rotation = new Vector3(0, 0, 0)
         } else if (this.side === 'x') {
             this.cursor.rotation = new Vector3(0, -Math.PI / 2, 0)
-        } else {
+        } else if (this.side === 'y') {
             this.cursor.rotation = new Vector3(Math.PI / 2, 0, 0)
         }
     }

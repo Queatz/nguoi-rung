@@ -6,7 +6,7 @@ class Game {
         const engine = new Engine(canvas)
         const scene = new Scene(engine)
 
-        new Map(scene)
+        const map = new Map(scene)
 
         engine.runRenderLoop(() => {
             scene.render()
@@ -26,7 +26,7 @@ class Game {
 
         ;
 
-        ['View', 'Map', 'Tools', 'Brush', 'Tiles', 'Objects', 'Plots'].forEach(section => {
+        ['Map', 'View', 'Tools', 'Brush', 'Tiles', 'Objects', 'Plots'].forEach(section => {
             const div = document.createElement('div')
             div.className = 'panel-section'
             div.innerText = section
@@ -34,6 +34,22 @@ class Game {
             const box = document.createElement('div')
             box.className = 'panel-box'
             div.appendChild(box)
+
+            if (section === 'Brush') {
+                const brushSizeInput = document.createElement('input')
+                brushSizeInput.placeholder = 'Size'
+                brushSizeInput.addEventListener('change', () => {
+                    map.set('brushSize', parseInt(brushSizeInput.value))
+                })
+                box.appendChild(brushSizeInput)
+
+                const brushDensityInput = document.createElement('input')
+                brushDensityInput.placeholder = 'Density (1-100)'
+                brushDensityInput.addEventListener('change', () => {
+                    map.set('brushDensity', parseInt(brushDensityInput.value))
+                })
+                box.appendChild(brushDensityInput)
+            }
 
             rightPanel.appendChild(div)
         })

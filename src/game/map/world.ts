@@ -16,7 +16,7 @@ export class World {
 
     constructor(private scene: Scene) {
         scene.fogMode = Scene.FOGMODE_EXP2
-        scene.fogDensity = 0.025
+        scene.fogDensity = 0.01
         scene.fogColor = new Color3(.9, .9, .9)
         scene.clearColor = scene.fogColor.toColor4()//.toLinearSpace()
         scene.ambientColor = scene.fogColor
@@ -26,17 +26,16 @@ export class World {
         ambience.groundColor = Color3.White()
         ambience.intensity = .5
         let sun = new DirectionalLight('sun', new Vector3(.25, -1, .5).normalize(), scene)
-        sun.intensity = 2
+        sun.intensity = 1
         sun.shadowMinZ = scene.activeCamera!.minZ
         sun.shadowMaxZ = scene.activeCamera!.maxZ
 
         this.sun = sun
         this.ambience = ambience
 
-        const shadowGenerator = new CascadedShadowGenerator(512, sun)
+        const shadowGenerator = new CascadedShadowGenerator(256, sun)
         shadowGenerator.lambda = .8
-        shadowGenerator.bias = .004
-        // shadowGenerator.setDarkness(0.5)
+        shadowGenerator.bias = .02
         shadowGenerator.transparencyShadow = true
         shadowGenerator.stabilizeCascades = true
         shadowGenerator.shadowMaxZ = sun.shadowMaxZ
@@ -51,5 +50,9 @@ export class World {
 
     addShadowCaster = (mesh: AbstractMesh) => {
         this.shadows.addShadowCaster(mesh)
+    }
+
+    removeShadowCaster = (mesh: AbstractMesh) => {
+        this.shadows.removeShadowCaster(mesh)
     }
 }

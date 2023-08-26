@@ -1,6 +1,6 @@
 import {
     AbstractMesh,
-    Color3, DirectionalLight,
+    Color3, Color4, DirectionalLight,
     Mesh,
     MeshBuilder,
     Quaternion,
@@ -25,7 +25,7 @@ export class Tilemap {
     // { 'x,y,z,d': [mesh, mesh] }
     objects: any = {}
 
-    constructor(private scene: Scene, private sun: DirectionalLight, private addShadowCaster: (mesh: AbstractMesh) => void) {
+    constructor(private scene: Scene, private sun: DirectionalLight, private addShadowCaster: (mesh: AbstractMesh) => void, private removeShadowCaster: (mesh: AbstractMesh) => void) {
 
         // Objects
 
@@ -44,6 +44,8 @@ export class Tilemap {
         m.diffuseTexture = new Texture('/assets/pine.png', scene, {
             samplingMode: Texture.NEAREST_SAMPLINGMODE
         })
+        m.diffuseTexture.wrapU = Texture.CLAMP_ADDRESSMODE
+        m.diffuseTexture.wrapV = Texture.CLAMP_ADDRESSMODE
         m.diffuseTexture.hasAlpha = true
         m.diffuseColor = Color3.White()
         m.specularColor = Color3.Black()
@@ -58,6 +60,8 @@ export class Tilemap {
 
         // Has to happen after shadow clone
         box.receiveShadows = true
+
+        box.registerInstancedBuffer('color', 4)
 
         this.treeBase = box
         this.treeShadowBase = shadowMesh
@@ -235,6 +239,7 @@ export class Tilemap {
         if (meshes) {
             meshes.forEach((mesh: Mesh) => {
                 this.scene.removeMesh(mesh)
+                this.removeShadowCaster(mesh)
             })
         }
 
@@ -248,8 +253,6 @@ export class Tilemap {
         }
 
         const tree = this.treeBase.createInstance('Tree')
-
-        console.log(side)
 
         if (side === 'y') {
             tree.position.copyFrom(position.add(new Vector3(.5, 0, .5)))
@@ -265,8 +268,13 @@ export class Tilemap {
             tree.rotation.x = Math.PI / 2
         }
 
+        const color = new Color4(0, .2, .4, 0).scale(Math.random())
+        tree.instancedBuffers['color'] = new Color4(1, 1, 1, 1).subtract(color)
+        tree.scaling.scaleInPlace(.5 + Math.random())
+
         const sh = this.treeShadowBase.createInstance('Tree Shadow')
         sh.position.copyFrom(tree.position)
+        sh.scaling.copyFrom(tree.scaling)
 
         // todo needs to be updated when light is rotated
         if (side === 'y') {
