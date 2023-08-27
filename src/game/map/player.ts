@@ -17,6 +17,7 @@ export class Player {
         mesh.material.backFaceCulling = false
         mesh.billboardMode = Mesh.BILLBOARDMODE_Y
         mesh.position.y += .25
+        mesh.receiveShadows = true
 
         this.mesh = mesh
     }

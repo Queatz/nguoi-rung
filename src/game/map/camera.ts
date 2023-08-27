@@ -38,6 +38,7 @@ export class Camera {
     }
 
     toggleView = (isReverse: boolean) => {
+        this.camera.targetScreenOffset.scaleInPlace(0)
         if (isReverse) {
             this.view = this.view === CameraView.Free ? CameraView.Eye : this.view === CameraView.Player ? CameraView.Free : CameraView.Player
         } else {

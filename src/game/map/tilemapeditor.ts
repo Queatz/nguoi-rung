@@ -80,46 +80,80 @@ export class TilemapEditor {
         ray.origin.projectOnPlaneToRef(plane, ray.origin.add(ray.direction), pickedPoint)
 
         if (pickedPoint) {
-            let pos = pickedPoint
+            let pos = this.updateSide(this.drawPlane, pickedPoint)
 
-            if (this.drawPlane === 'x') {
-                // todo support auto-rotate
-                pos = pickedPoint.add(this.side === 'y' ? new Vector3(.5, .5, 0) : this.side === 'z' ? new Vector3(.5, 0, .5) : new Vector3(.5, 0, 0)).floor()
-            } else if (this.drawPlane === 'y') {
-                // pos = pickedPoint.add(this.side === 'y' ? new Vector3(0, .5, 0) : this.side === 'z' ? new Vector3(0, .5, .5) : new Vector3(.5, .5, 0)).floor()
-                if (this.side === 'y') {
-                    pos = pickedPoint.add(new Vector3(0, .5, 0)).floor()
+            if (this.autoRotate) {
+                if (this.side === 'z') {
+                    this.cursor.rotation = new Vector3(0, 0, 0)
+                } else if (this.side === 'x') {
+                    this.cursor.rotation = new Vector3(0, -Math.PI / 2, 0)
                 } else {
-                    const zPos = pickedPoint.add(new Vector3(0, .5, .5)).floor()
-                    const xPos = pickedPoint.add(new Vector3(.5, .5, 0)).floor()
-
-                    if (this.autoRotate && (Math.abs(pickedPoint.z - zPos.z) > .25 || Math.abs(pickedPoint.x - xPos.x) > .25)) {
-                        if (Math.abs(pickedPoint.z - zPos.z) < Math.abs(pickedPoint.x - xPos.x)) {
-                            this.side = 'z'
-                            pos = zPos
-                        } else {
-                            this.side = 'x'
-                            pos = xPos
-                        }
-                        if (this.side === 'z') {
-                            this.cursor.rotation = new Vector3(0, 0, 0)
-                        } else if (this.side === 'x') {
-                            this.cursor.rotation = new Vector3(0, -Math.PI / 2, 0)
-                        } else {
-                            this.cursor.rotation = new Vector3(Math.PI / 2, 0, 0)
-                        }
-                    } else {
-                        pos = pickedPoint.add(this.side === 'z' ? new Vector3(0, .5, .5) : new Vector3(.5, .5, 0)).floor()
-                    }
+                    this.cursor.rotation = new Vector3(Math.PI / 2, 0, 0)
                 }
-            } else if (this.drawPlane === 'z') {
-                // todo support auto-rotate
-                pos = pickedPoint.add(this.side === 'y' ? new Vector3(0, .5, .5) : this.side === 'z' ? new Vector3(0, 0, .5) : new Vector3(.5, 0, .5)).floor()
             }
 
             this.tilePos.copyFrom(pos)
             this.cursor.position.copyFrom(this.tilePos)
             this.grid.position.copyFrom(this.tilePos.add(this.drawPlane === 'y' ? new Vector3(.5, 0, .5) : this.drawPlane === 'z' ? new Vector3(.5, .5, 0) : new Vector3(0, .5, .5)))
+        }
+    }
+
+    private updateSide = (side: Side, pickedPoint: Vector3): Vector3 => {
+        let up!: Vector3
+        let right!: Vector3
+        let forward!: Vector3
+        let sideForward!: Side
+        let sideRight!: Side
+        let pickRight!: (v: Vector3) => number
+        let pickForward!: (v: Vector3) => number
+
+        switch (side) {
+            case 'y':
+                up = Vector3.Up().scale(.5)
+                forward = new Vector3(0, .5, .5)
+                right = new Vector3(.5, .5, 0)
+                sideForward = 'z'
+                sideRight = 'x'
+                pickForward = v => v.z
+                pickRight = v => v.x
+                break
+            case 'x':
+                up = Vector3.Right().scale(.5)
+                forward = new Vector3(.5, .5, 0)
+                right = new Vector3(.5, 0, .5)
+                sideForward = 'y'
+                sideRight = 'z'
+                pickForward = v => v.y
+                pickRight = v => v.z
+                break
+            case 'z':
+                up = Vector3.Forward().scale(.5)
+                forward = new Vector3(0, .5, .5)
+                right = new Vector3(.5, 0,  .5)
+                sideForward = 'y'
+                sideRight = 'x'
+                pickForward = v => v.y
+                pickRight = v => v.x
+                break
+        }
+
+        if (this.side === this.drawPlane) {
+            return pickedPoint.add(up).floor()
+        } else {
+            const forwardPos = pickedPoint.add(forward).floor()
+            const rightPos = pickedPoint.add(right).floor()
+
+            if (this.autoRotate && (Math.abs(pickForward(pickedPoint) - pickForward(forwardPos)) > .25 || Math.abs(pickRight(pickedPoint) - pickRight(rightPos)) > .25)) {
+                if (Math.abs(pickForward(pickedPoint) - pickForward(forwardPos)) < Math.abs(pickRight(pickedPoint) - pickRight(rightPos))) {
+                    this.side = sideForward
+                    return forwardPos
+                } else {
+                    this.side = sideRight
+                    return rightPos
+                }
+            } else {
+                return pickedPoint.add(this.side === sideForward ? forward : right).floor()
+            }
         }
     }
 
@@ -232,6 +266,7 @@ export class TilemapEditor {
                 }
                 break
         }
+
         if (this.drawPlane === 'x') {
             this.grid.rotation = new Vector3(0, 0, Math.PI / 2)
         } else if (this.drawPlane === 'y') {
@@ -239,6 +274,7 @@ export class TilemapEditor {
         } else {
             this.grid.rotation = new Vector3(Math.PI / 2, 0, 0)
         }
+
         this.refreshBrush()
     }
 
@@ -275,9 +311,28 @@ export class TilemapEditor {
         this.drawMode = this.drawMode === 'tile' ? 'object' : 'tile'
     }
 
-    toggleSide = () => {
-        // todo if auto rotate toggle between plane and wall
-        this.side = this.side === 'y' ? 'z' : this.side === 'z' ? 'x' : 'y'
+    toggleAutoRotate = () => {
+        this.autoRotate = !this.autoRotate
+    }
+
+    toggleSide = (isReversed: boolean) => {
+        if (this.autoRotate && this.side !== this.drawPlane) {
+            switch (this.drawPlane) {
+                case 'y':
+                    this.side = this.side === 'y' ? 'z' : 'y'
+                    break
+                case 'x':
+                    this.side = this.side === 'x' ? 'y' : 'x'
+                    break
+                case 'z':
+                    this.side = this.side === 'z' ? 'x' : 'z'
+                    break
+            }
+        } else if (isReversed) {
+            this.side = this.side === 'y' ? 'x' : this.side === 'z' ? 'y' : 'z'
+        } else {
+            this.side = this.side === 'y' ? 'z' : this.side === 'z' ? 'x' : 'y'
+        }
         this.refreshBrush()
     }
 

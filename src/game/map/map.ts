@@ -32,7 +32,7 @@ export class Map {
 
         scene.onKeyboardObservable.add(event => {
             // todo if Tab, toggle camera view
-            if (['w', 'a', 's', 'd', 'q'].indexOf(event.event.key) !== -1) {
+            if (['w', 'a', 's', 'd', 'q', 'r'].indexOf(event.event.key) !== -1) {
                 if (event.type === KeyboardEventTypes.KEYDOWN) {
                     switch (event.event.key) {
                         case 'w':
@@ -49,6 +49,9 @@ export class Map {
                             break
                         case 'q':
                             tilemapEditor.toggleDrawMode()
+                            break
+                        case 'r':
+                            tilemapEditor.toggleAutoRotate()
                             break
                     }
                 } else if (event.type === KeyboardEventTypes.KEYUP) {
@@ -73,7 +76,7 @@ export class Map {
                     event.event.preventDefault()
                 } else if (event.event.key === ' ') {
                     if (event.event.ctrlKey) {
-                        tilemapEditor.toggleSide()
+                        tilemapEditor.toggleSide(event.event.shiftKey)
                     } else {
                         tilemapEditor.togglePlane(event.event.shiftKey)
                     }

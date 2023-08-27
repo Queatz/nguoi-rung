@@ -40,7 +40,6 @@ html, body {
 }
 
 .ui .panel-section {
-    font-weight: bold;
 }
 
 .ui .panel-section:not(:last-child) {
@@ -53,4 +52,6 @@ html, body {
     height: 12rem;
     margin-top: 1rem;
     background-color: rgba(0 0 0 / 2.5%);
+    overflow: hidden auto;
+    padding: .5rem;
 }
