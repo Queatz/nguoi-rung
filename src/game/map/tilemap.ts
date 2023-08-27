@@ -262,8 +262,6 @@ export class Tilemap {
             return
         }
 
-        const camera = this.scene.activeCamera!
-
         const tree = this.treeBase.createInstance('Tree')
 
         switch (side) {

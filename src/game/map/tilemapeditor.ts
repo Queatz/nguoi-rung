@@ -80,21 +80,43 @@ export class TilemapEditor {
         ray.origin.projectOnPlaneToRef(plane, ray.origin.add(ray.direction), pickedPoint)
 
         if (pickedPoint) {
-            let pos = this.updateSide(this.drawPlane, pickedPoint)
+            this.updateDraw(pickedPoint)
+        }
+    }
 
-            if (this.autoRotate) {
-                if (this.side === 'z') {
-                    this.cursor.rotation = new Vector3(0, 0, 0)
-                } else if (this.side === 'x') {
-                    this.cursor.rotation = new Vector3(0, -Math.PI / 2, 0)
-                } else {
-                    this.cursor.rotation = new Vector3(Math.PI / 2, 0, 0)
+    private updateDraw = (pickedPoint: Vector3) => {
+        const cPos = this.scene.activeCamera!.globalPosition
+        let pos = this.updateSide(this.drawPlane, pickedPoint)
+        const curPos = pos.clone()
+
+        if (this.side !== this.drawPlane) {
+            if (this.drawPlane === 'y') {
+                if (cPos.y < curPos.y) {
+                    curPos.y -= 1
+                }
+            } else if (this.drawPlane === 'x') {
+                if (cPos.x < curPos.x) {
+                    curPos.x -= 1
+                }
+            } else if (this.drawPlane === 'z') {
+                if (cPos.z < curPos.z) {
+                    curPos.z -= 1
                 }
             }
+        }
 
-            this.tilePos.copyFrom(pos)
-            this.cursor.position.copyFrom(this.tilePos)
-            this.grid.position.copyFrom(this.tilePos.add(this.drawPlane === 'y' ? new Vector3(.5, 0, .5) : this.drawPlane === 'z' ? new Vector3(.5, .5, 0) : new Vector3(0, .5, .5)))
+        this.tilePos.copyFrom(curPos)
+        this.cursor.position.copyFrom(curPos)
+        this.grid.position.copyFrom(pos.add(this.drawPlane === 'y' ? new Vector3(.5, 0, .5) : this.drawPlane === 'z' ? new Vector3(.5, .5, 0) : new Vector3(0, .5, .5)))
+
+        if (this.autoRotate) {
+            if (this.side === 'z') {
+                this.cursor.rotation = new Vector3(0, 0, 0)
+            } else if (this.side === 'x') {
+                this.cursor.rotation = new Vector3(0, -Math.PI / 2, 0)
+            } else {
+                this.cursor.rotation = new Vector3(Math.PI / 2, 0, 0)
+            }
         }
     }
 
