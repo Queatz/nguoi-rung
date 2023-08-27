@@ -128,6 +128,21 @@ export class TilemapEditor {
     }
 
     private drawBrush = (position: Vector3, side: Side, eraser = false) => {
+        const camera = this.scene.activeCamera!
+        if (side === 'y') {
+            if (camera.globalPosition.y < position.y) {
+                side = '-y'
+            }
+        } else if (side === 'x') {
+            if (camera.globalPosition.x < position.x) {
+                side = '-x'
+            }
+        } else if (side === 'z') {
+            if (camera.globalPosition.z < position.z) {
+                side = '-z'
+            }
+        }
+
         const o = Vector3.Zero()
         const r = Math.floor(this.brushSize / 2)
         for (let x = -r; x < this.brushSize - r; x++) {

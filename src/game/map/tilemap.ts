@@ -102,6 +102,11 @@ export class Tilemap {
     }
 
     setTile = (position: Vector3, side: Side) => {
+        // todo
+        if (side.length > 1) {
+            side = side.substring(1) as Side
+        }
+
         const key = this.key(position, side)
 
         if (key in this.tiles) return
@@ -204,6 +209,11 @@ export class Tilemap {
     }
 
     removeTile = (position: Vector3, side: Side) => {
+        // todo
+        if (side.length > 1) {
+            side = side.substring(1) as Side
+        }
+
         const key = this.key(position, side)
 
         if (!(key in this.tiles)) return
@@ -252,20 +262,82 @@ export class Tilemap {
             return
         }
 
+        const camera = this.scene.activeCamera!
+
         const tree = this.treeBase.createInstance('Tree')
 
-        if (side === 'y') {
-            tree.position.copyFrom(position.add(new Vector3(.5, 0, .5)))
-            tree.billboardMode = Mesh.BILLBOARDMODE_Y
-        } else if (side === 'x') {
-            tree.position.copyFrom(position.add(new Vector3(0, .5, .5)))
-            tree.billboardMode = Mesh.BILLBOARDMODE_X
-            tree.rotation.z = Math.PI / 2
-
-        } else if (side === 'z') {
-            tree.position.copyFrom(position.add(new Vector3(.5, .5, 0)))
-            tree.billboardMode = Mesh.BILLBOARDMODE_Z
-            tree.rotation.x = Math.PI / 2
+        switch (side) {
+            case 'y':
+                tree.position.copyFrom(position.add(new Vector3(.5, 0, .5)))
+                tree.onAfterWorldMatrixUpdateObservable.add((node) => {
+                    const v = node.position.subtract(this.scene.activeCamera!.globalPosition)
+                    v.y = 0
+                    node.rotationQuaternion = Quaternion.FromLookDirectionRH(
+                        v.normalize(),
+                        Vector3.Up()
+                    )
+                })
+                break
+            case 'x':
+                tree.position.copyFrom(position.add(new Vector3(0, .5, .5)))
+                tree.rotation.z = -Math.PI / 2
+                tree.onAfterWorldMatrixUpdateObservable.add((node) => {
+                    const v = node.position.subtract(this.scene.activeCamera!.globalPosition)
+                    v.x = 0
+                    node.rotationQuaternion = Quaternion.FromLookDirectionRH(
+                        v.normalize(),
+                        Vector3.Right()
+                    )
+                })
+                break
+            case 'z':
+                tree.position.copyFrom(position.add(new Vector3(.5, .5, 0)))
+                tree.rotation.x = Math.PI / 2
+                tree.onAfterWorldMatrixUpdateObservable.add((node) => {
+                    const v = node.position.subtract(this.scene.activeCamera!.globalPosition)
+                    v.z = 0
+                    node.rotationQuaternion = Quaternion.FromLookDirectionRH(
+                        v.normalize(),
+                        Vector3.Forward()
+                    )
+                })
+                break
+            case '-y':
+                tree.position.copyFrom(position.add(new Vector3(.5, 0, .5)))
+                tree.rotation.z = -Math.PI
+                tree.onAfterWorldMatrixUpdateObservable.add((node) => {
+                    const v = node.position.subtract(this.scene.activeCamera!.globalPosition)
+                    v.y = 0
+                    node.rotationQuaternion = Quaternion.FromLookDirectionRH(
+                        v.normalize(),
+                        Vector3.Down()
+                    )
+                })
+                break
+            case '-x':
+                tree.position.copyFrom(position.add(new Vector3(0, .5, .5)))
+                tree.rotation.z = Math.PI / 2
+                tree.onAfterWorldMatrixUpdateObservable.add((node) => {
+                    const v = node.position.subtract(this.scene.activeCamera!.globalPosition)
+                    v.x = 0
+                    node.rotationQuaternion = Quaternion.FromLookDirectionRH(
+                        v.normalize(),
+                        Vector3.Left()
+                    )
+                })
+                break
+            case '-z':
+                tree.position.copyFrom(position.add(new Vector3(.5, .5, 0)))
+                tree.rotation.x = -Math.PI / 2
+                tree.onAfterWorldMatrixUpdateObservable.add((node) => {
+                    const v = node.position.subtract(this.scene.activeCamera!.globalPosition)
+                    v.z = 0
+                    node.rotationQuaternion = Quaternion.FromLookDirectionRH(
+                        v.normalize(),
+                        Vector3.Backward()
+                    )
+                })
+                break
         }
 
         const color = new Color4(0, .2, .4, 0).scale(Math.random())
@@ -277,15 +349,15 @@ export class Tilemap {
         sh.scaling.copyFrom(tree.scaling)
 
         // todo needs to be updated when light is rotated
-        if (side === 'y') {
+        if (side === 'y' || side === '-y') {
             const q = Quaternion.FromLookDirectionLH(this.sun.direction, Vector3.Up()).toEulerAngles().y
             // sh.position.y -= .5
             sh.addRotation(0, q + Math.PI / 2, 0)
-        } else if (side === 'x') {
+        } else if (side === 'x' || side === '-x') {
             const q = Quaternion.FromLookDirectionLH(this.sun.direction, Vector3.Right()).toEulerAngles().x
             sh.addRotation(q + Math.PI / 2, 0, 0)
             // sh.position.x -= .5
-        } else if (side === 'z') {
+        } else if (side === 'z' || side === '-z') {
             const q = Quaternion.FromLookDirectionLH(this.sun.direction, Vector3.Forward()).toEulerAngles().z
             sh.addRotation(0, 0, q + Math.PI / 2)
             // sh.position.z -= .5
