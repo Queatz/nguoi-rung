@@ -10,7 +10,7 @@ export class Map {
 
     tilemapEditor: TilemapEditor
 
-    constructor(scene: Scene) {
+    constructor(private scene: Scene) {
         const camera = new Camera(scene, () => tilemap.mesh)
         const world = new World(scene)
         const post = new Post(scene)
@@ -154,16 +154,20 @@ export class Map {
             camera.update()
             world.update()
             tilemapEditor.update()
+            post.update()
         })
     }
 
     set = (property: string, value: string | number) => {
         switch (property) {
             case 'brushSize':
-                this.tilemapEditor.brushSize = Math.max(1, value as number)
+                this.tilemapEditor.brushSize = Math.max(1, Math.min(100, value as number))
                 break
             case 'brushDensity':
                 this.tilemapEditor.brushDensity = Math.min(100, Math.max(1, value as number))
+                break
+            case 'fov':
+                this.scene.activeCamera!.fov = Math.max(.25, Math.min(2, value as number))
                 break
         }
     }

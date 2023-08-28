@@ -4,7 +4,7 @@ import {Ui} from "./ui";
 
 class Game {
     public static create(canvas: HTMLCanvasElement) {
-        const engine = new Engine(canvas)
+        const engine = new Engine(canvas, false)
         const scene = new Scene(engine)
 
         const map = new Map(scene)
@@ -17,7 +17,7 @@ class Game {
             engine.resize()
         })
 
-        const ui = new Ui(map)
+        const ui = new Ui(engine, map)
 
         setTimeout(() => canvas.focus())
     }

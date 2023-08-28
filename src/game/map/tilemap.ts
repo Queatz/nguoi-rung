@@ -267,72 +267,84 @@ export class Tilemap {
         switch (side) {
             case 'y':
                 tree.position.copyFrom(position.add(new Vector3(.5, 0, .5)))
+                tree.rotationQuaternion = Quaternion.Identity()
                 tree.onAfterWorldMatrixUpdateObservable.add((node) => {
                     const v = node.position.subtract(this.scene.activeCamera!.globalPosition)
                     v.y = 0
-                    node.rotationQuaternion = Quaternion.FromLookDirectionRH(
+                    Quaternion.FromLookDirectionRHToRef(
                         v.normalize(),
-                        Vector3.Up()
+                        Vector3.Up(),
+                        node.rotationQuaternion!
                     )
                 })
                 break
             case 'x':
                 tree.position.copyFrom(position.add(new Vector3(0, .5, .5)))
                 tree.rotation.z = -Math.PI / 2
+                tree.rotationQuaternion = Quaternion.Identity()
                 tree.onAfterWorldMatrixUpdateObservable.add((node) => {
                     const v = node.position.subtract(this.scene.activeCamera!.globalPosition)
                     v.x = 0
-                    node.rotationQuaternion = Quaternion.FromLookDirectionRH(
+                    Quaternion.FromLookDirectionRHToRef(
                         v.normalize(),
-                        Vector3.Right()
+                        Vector3.Right(),
+                        node.rotationQuaternion!
                     )
                 })
                 break
             case 'z':
                 tree.position.copyFrom(position.add(new Vector3(.5, .5, 0)))
                 tree.rotation.x = Math.PI / 2
+                tree.rotationQuaternion = Quaternion.Identity()
                 tree.onAfterWorldMatrixUpdateObservable.add((node) => {
                     const v = node.position.subtract(this.scene.activeCamera!.globalPosition)
                     v.z = 0
-                    node.rotationQuaternion = Quaternion.FromLookDirectionRH(
+                    Quaternion.FromLookDirectionRHToRef(
                         v.normalize(),
-                        Vector3.Forward()
+                        Vector3.Forward(),
+                        node.rotationQuaternion!
                     )
                 })
                 break
             case '-y':
                 tree.position.copyFrom(position.add(new Vector3(.5, 0, .5)))
                 tree.rotation.z = -Math.PI
+                tree.rotationQuaternion = Quaternion.Identity()
                 tree.onAfterWorldMatrixUpdateObservable.add((node) => {
                     const v = node.position.subtract(this.scene.activeCamera!.globalPosition)
                     v.y = 0
-                    node.rotationQuaternion = Quaternion.FromLookDirectionRH(
+                    Quaternion.FromLookDirectionRHToRef(
                         v.normalize(),
-                        Vector3.Down()
+                        Vector3.Down(),
+                        node.rotationQuaternion!
                     )
                 })
                 break
             case '-x':
                 tree.position.copyFrom(position.add(new Vector3(0, .5, .5)))
                 tree.rotation.z = Math.PI / 2
+                tree.rotationQuaternion = Quaternion.Identity()
                 tree.onAfterWorldMatrixUpdateObservable.add((node) => {
                     const v = node.position.subtract(this.scene.activeCamera!.globalPosition)
                     v.x = 0
-                    node.rotationQuaternion = Quaternion.FromLookDirectionRH(
+                    Quaternion.FromLookDirectionRHToRef(
                         v.normalize(),
-                        Vector3.Left()
+                        Vector3.Left(),
+                        node.rotationQuaternion!
                     )
                 })
                 break
             case '-z':
                 tree.position.copyFrom(position.add(new Vector3(.5, .5, 0)))
                 tree.rotation.x = -Math.PI / 2
+                tree.rotationQuaternion = Quaternion.Identity()
                 tree.onAfterWorldMatrixUpdateObservable.add((node) => {
                     const v = node.position.subtract(this.scene.activeCamera!.globalPosition)
                     v.z = 0
-                    node.rotationQuaternion = Quaternion.FromLookDirectionRH(
+                    Quaternion.FromLookDirectionRHToRef(
                         v.normalize(),
-                        Vector3.Backward()
+                        Vector3.Backward(),
+                        node.rotationQuaternion!
                     )
                 })
                 break

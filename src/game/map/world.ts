@@ -16,9 +16,9 @@ export class World {
 
     constructor(private scene: Scene) {
         scene.fogMode = Scene.FOGMODE_EXP2
-        scene.fogDensity = 0.01
+        scene.fogDensity = 0.02
         scene.fogColor = new Color3(.9, .9, .9)
-        scene.clearColor = scene.fogColor.toColor4()//.toLinearSpace()
+        scene.clearColor = scene.fogColor.toColor4().toLinearSpace() // HDR is linear
         scene.ambientColor = scene.fogColor
 
         let ambience = new HemisphericLight('Ambience', new Vector3(0, -1, 0).normalize(), scene)

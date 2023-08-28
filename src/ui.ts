@@ -1,7 +1,8 @@
 import {Map} from './game/map/map'
+import {Engine} from "@babylonjs/core";
 
 export class Ui {
-    constructor(private map: Map) {
+    constructor(private engine: Engine, private map: Map) {
         const ui = document.createElement('div')
         ui.className = 'ui'
         document.body.appendChild(ui)
@@ -46,8 +47,29 @@ export class Ui {
             }],
             ['View', (box: HTMLDivElement) => {
                 box.innerHTML = `
+                Graphics: Lowest, Low, Medium, High, Highest
                 DOF, FOV<br />
                 `.trim()
+
+                const pixelScale = document.createElement('input')
+                pixelScale.placeholder = 'Pixel size (1 – 16)'
+                pixelScale.addEventListener('change', () => {
+                    const s = parseInt(pixelScale.value)
+                    if (!isNaN(s)) {
+                        engine.setHardwareScalingLevel(Math.min(16, Math.max(1, Math.floor(s))))
+                    }
+                })
+                box.appendChild(pixelScale)
+
+                const fov = document.createElement('input')
+                fov.placeholder = 'Field of view (0.25 – 2.0)'
+                fov.addEventListener('change', () => {
+                    const s = parseFloat(fov.value)
+                    if (!isNaN(s)) {
+                        map.set('fov', s)
+                    }
+                })
+                box.appendChild(fov)
             }],
             ['Tools', (box: HTMLDivElement) => {
                 box.innerHTML = `
@@ -56,14 +78,14 @@ export class Ui {
             }],
             ['Brush', (box: HTMLDivElement) => {
                 const brushSizeInput = document.createElement('input')
-                brushSizeInput.placeholder = 'Size'
+                brushSizeInput.placeholder = 'Size (1 – 100)'
                 brushSizeInput.addEventListener('change', () => {
                     map.set('brushSize', parseInt(brushSizeInput.value))
                 })
                 box.appendChild(brushSizeInput)
 
                 const brushDensityInput = document.createElement('input')
-                brushDensityInput.placeholder = 'Density (1-100)'
+                brushDensityInput.placeholder = 'Density (1 – 100)'
                 brushDensityInput.addEventListener('change', () => {
                     map.set('brushDensity', parseInt(brushDensityInput.value))
                 })
